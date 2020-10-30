@@ -1,11 +1,5 @@
 name: MO
-on:
-  push:
-    paths:
-      - 'model-optimizer/**'
-  pull_request:
-    paths:
-      - 'model-optimizer/**'
+on: [push, pull_request]
 
 jobs:
   Pylint-UT:
