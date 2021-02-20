@@ -17,7 +17,6 @@
 #include <ngraph/pass/manager.hpp>
 #include <ie_common.h>
 
-#include "generic_ie.hpp"
 #include "cnn_network_ngraph_impl.hpp"
 #include <transformations/init_node_info.hpp>
 #include <transformations/common_optimizations/common_optimizations.hpp>
@@ -94,8 +93,6 @@ CNNNetworkImpl::CNNNetworkImpl(const ICNNNetwork & ngraphImpl) {
     IE_ASSERT(ngraphImplPtr != nullptr);
     IE_ASSERT(ngraphImplPtr->getFunction() != nullptr);
     auto graph = ngraph::clone_function(*ngraphImpl.getFunction());
-    // Disable shape inference (WA for generic operations)
-    ::ngraph::op::GenericIE::DisableReshape noReshape(graph);
 
     ::ngraph::pass::Manager manager;
     manager.register_pass<::ngraph::pass::InitNodeInfo>();
@@ -399,7 +396,8 @@ StatusCode CNNNetworkImpl::serialize(const std::string& xmlPath, const std::stri
     noexcept {
     try {
 #ifdef ENABLE_V7_SERIALIZE
-        Serialization::Serialize(xmlPath, binPath, CNNNetwork(shared_from_this()));
+        Serialization::Serialize(xmlPath, binPath, CNNNetwork(
+            std::const_pointer_cast<ICNNNetwork>(shared_from_this())));
         return OK;
 #endif
     } catch (const InferenceEngineException& e) {
