@@ -47,8 +47,6 @@ public:
                             const std::map<std::string, std::string>&   config,
                             Engine*                                     plugin);
 
-    ~HeteroExecutableNetwork() override = default;
-
     InferenceEngine::IInferRequestInternal::Ptr CreateInferRequestImpl(InferenceEngine::InputsDataMap networkInputs,
                                                                        InferenceEngine::OutputsDataMap networkOutputs) override;
 
@@ -63,7 +61,6 @@ public:
 private:
     void InitCNNImpl(const InferenceEngine::CNNNetwork&    network);
     void InitNgraph(const InferenceEngine::CNNNetwork&     network);
-    bool ImportExportSupported(const std::string& deviceName) const;
 
     struct NetworkDesc {
         std::string                                   _device;
